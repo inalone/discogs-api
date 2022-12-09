@@ -1,14 +1,18 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+pub mod database;
+pub mod discogs;
+pub use database::*;
+pub use discogs::*;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::{Artist, Discogs};
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    #[tokio::test]
+    async fn test112() {
+        let mut discogs = Discogs::new("aiko_unit_test");
+        match Artist::get(&mut discogs, 81013).await {
+            Ok(artist) => println!("{:?}", artist),
+            Err(e) => println!("{}", e),
+        };
     }
 }
