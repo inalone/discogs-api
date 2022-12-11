@@ -1,5 +1,6 @@
 use reqwest::header::USER_AGENT;
-use reqwest::{Client, Error, RequestBuilder, Response};
+use reqwest::{Client, RequestBuilder, Response};
+use std::error::Error;
 
 use crate::Artist;
 
@@ -12,8 +13,16 @@ pub struct Discogs {
 }
 
 impl Discogs {
+    pub fn new(user_agent: &str) -> Self {
+        Discogs {
+            api_endpoint: API_URL.to_string(),
+            user_agent: user_agent.to_string(),
+            http_client: Client::new(),
+        }
+    }
+
     // TODO: add rate limit
-    pub async fn make_request(&self, url: &str) -> Result<Response, Error> {
+    pub async fn make_request(&self, url: &str) -> Result<Response, reqwest::Error> {
         let api_call: RequestBuilder = self
             .http_client
             .get(url)
@@ -21,11 +30,7 @@ impl Discogs {
         api_call.send().await
     }
 
-    pub fn new(user_agent: &str) -> Self {
-        Discogs {
-            api_endpoint: API_URL.to_string(),
-            user_agent: user_agent.to_string(),
-            http_client: Client::new(),
-        }
+    pub async fn artist(&self, id: i32) -> Result<Artist, Box<dyn Error>> {
+        Artist::get(&self, id).await
     }
 }
