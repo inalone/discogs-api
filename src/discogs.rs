@@ -2,7 +2,7 @@ use reqwest::header::USER_AGENT;
 use reqwest::{Client, RequestBuilder, Response};
 use std::error::Error;
 
-use crate::Artist;
+use crate::{Artist, Currency, Release};
 
 pub const API_URL: &'static str = "https://api.discogs.com";
 
@@ -32,5 +32,10 @@ impl Discogs {
 
     pub async fn artist(&self, id: i32) -> Result<Artist, Box<dyn Error>> {
         Artist::get(&self, id).await
+    }
+
+    // TODO: make currency optional
+    pub async fn release(&self, id: i32, currency: Currency) -> Result<Release, Box<dyn Error>> {
+        Release::get(&self, id, currency).await
     }
 }

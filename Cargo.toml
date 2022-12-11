@@ -9,5 +9,6 @@ edition = "2021"
 tokio = { version = "1.23.0", features = ["macros"] }
 
 [dependencies]
+chrono = { version = "0.4.23", features = ["serde"] }
 reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0.149", features = ["derive"] }
