@@ -1,7 +1,6 @@
-use crate::{Currency, Discogs, Image};
+use crate::Image;
 use chrono::{DateTime, Local};
 use serde::Deserialize;
-use std::error::Error;
 
 #[derive(Deserialize, Debug)]
 pub struct Artist {
@@ -19,7 +18,7 @@ pub struct Community {
     pub contributors: Vec<Person>,
     pub data_quality: String,
     pub have: i32,
-    pub rating: Rating,
+    pub rating: AverageRating,
     pub status: String,
     pub submitter: Person,
     pub want: i32,
@@ -66,7 +65,7 @@ pub struct Person {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct Rating {
+pub struct AverageRating {
     pub average: f32,
     pub count: i32,
 }
@@ -126,23 +125,4 @@ pub struct Release {
     pub uri: String,
     pub videos: Vec<Video>,
     pub year: i32,
-}
-
-impl Release {
-    // https://www.discogs.com/developers/#page:database,header:database-release
-    pub async fn get(
-        discogs: &Discogs,
-        id: i32,
-        currency: Currency,
-    ) -> Result<Release, Box<dyn Error>> {
-        let currency_str = match currency {
-            Currency::Unspecified => "".to_string(),
-            _ => format!("?{}", currency.to_string()),
-        };
-        let url = format!("{}/releases/{}{}", discogs.api_endpoint, id, currency_str);
-        let response = discogs.make_request(&url).await?;
-        // FIXME: handle response.status
-
-        Ok(response.json().await?)
-    }
 }
